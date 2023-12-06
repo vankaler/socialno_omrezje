@@ -9,21 +9,60 @@ using System.Windows.Media.Imaging;
 
 namespace socialno_omrezje
 {
+    public class Friend : ViewModelBase
+    {
+        private string ime;
+        public string Ime
+        {
+            get { return ime; }
+            set
+            {
+                ime = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private BitmapImage slika;
+        public BitmapImage Slika
+        {
+            get { return slika; }
+            set
+            {
+                slika = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string status;
+        public string Status
+        {
+            get { return status; }
+            set
+            {
+                status = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
     public class ViewModel : ViewModelBase
     {
         public ViewModel()
         {
             SeznamObjav = new ObservableCollection<Data>();
-            DodajCommand = new RelayCommand(DodajObjavo);
+            PrijateljiList = new ObservableCollection<Friend>();
             OdstraniCommand = new RelayCommand(OdstraniObjavo, CanOdstrani);
             UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
             GoBackCommand = new RelayCommand(GoBack);
             OpenAddPostWindowCommand = new RelayCommand(OpenAddPostWindow);
             OpenImageDialogCommand = new RelayCommand(() => OpenImageDialog());
+            DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
+            OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
+            UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
         }
 
-        private ObservableCollection<string> prijateljiList;
-        public ObservableCollection<string> PrijateljiList
+        private ObservableCollection<Friend> prijateljiList;
+        public ObservableCollection<Friend> PrijateljiList
         {
             get { return prijateljiList; }
             set
@@ -31,6 +70,62 @@ namespace socialno_omrezje
                 prijateljiList = value;
                 RaisePropertyChanged();
             }
+        }
+
+        public ICommand DodajPrijateljaCommand { get; set; }
+        public ICommand OdstraniPrijateljaCommand { get; set; }
+        public ICommand UrediPrijateljaCommand { get; set; }
+
+        // Add these methods to handle friend operations
+        private void DodajPrijatelja()
+        {
+            // Implement logic to add a friend
+            BitmapImage image = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/facebook_image.jpg"));
+            PrijateljiList.Add(new Friend
+            {
+                Ime = "New Friend",
+                Slika = image,
+                Status = GetRandomStatus()
+            });
+            RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
+            RaisePropertyChanged(nameof(CanUrediPrijatelja));
+        }
+
+        private void OdstraniPrijatelja()
+        {
+            // Implement logic to remove a friend
+            if (PrijateljiList.Count > 0)
+            {
+                PrijateljiList.RemoveAt(0);
+                RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
+                RaisePropertyChanged(nameof(CanUrediPrijatelja));
+            }
+        }
+
+        public bool CanOdstraniPrijatelja
+        {
+            get { return PrijateljiList.Count > 0; }
+        }
+
+        private void UrediPrijatelja()
+        {
+            if (PrijateljiList.Count > 0)
+            {
+                PrijateljiList[0].Ime = "Edited Friend";
+                RaisePropertyChanged(nameof(CanUrediPrijatelja));
+            }
+        }
+
+        public bool CanUrediPrijatelja
+        {
+            get { return PrijateljiList.Count > 0; }
+        }
+
+        private string GetRandomStatus()
+        {
+            // Generates a random status (online or offline)
+            Random random = new Random();
+            return random.Next(2) == 0 ? "Online" : "Offline";
         }
 
         public RelayCommand OpenAddPostWindowCommand { get; set; }
@@ -62,21 +157,7 @@ namespace socialno_omrezje
         public ICommand DodajCommand { get; set; }
         public ICommand OdstraniCommand { get; set; }
         public ICommand UrediCommand { get; set; }
-        public RelayCommand GoBackCommand { get; }
-
-        private void DodajObjavo()
-        {
-            BitmapImage image = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/cat_vegetables.jpg"));
-            SeznamObjav.Add(new Data
-            {
-                Vsebina = "What's up",
-                Slika = image,
-                DatumObjave = DateTime.Now,
-                Lokacija = "Nova Lokacija",
-                Likes = 14,
-                Content = "He does not like vegetables."
-            });
-        }
+        public ICommand GoBackCommand { get; }
 
         private void OdstraniObjavo()
         {
@@ -114,14 +195,12 @@ namespace socialno_omrezje
 
         private void OpenAddPostWindow()
         {
-            addPostWindow addPostWindow = new addPostWindow(SeznamObjav); // Pass the ObservableCollection<Data>
+            addPostWindow addPostWindow = new addPostWindow(SeznamObjav);
             addPostWindow.ShowDialog();
         }
 
         private void OpenImageDialog()
         {
-            // Implement your image dialog logic here
-            // For example, you can use OpenFileDialog to allow users to select an image
             var openFileDialog = new OpenFileDialog
             {
                 Title = "Select an Image",
@@ -133,7 +212,6 @@ namespace socialno_omrezje
             {
                 // Process the selected image
                 string selectedImagePath = openFileDialog.FileName;
-                // Perform further actions if needed
             }
         }
     }
