@@ -10,7 +10,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
             <RowDefinition Height="*" />
             <RowDefinition Height="20" />
             
@@ -20,6 +20,7 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="70" />
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
@@ -50,15 +51,16 @@
 
         <!-- IMAGES -->
         <Image Grid.Row="0" Source="C:\Users\nejcp\OneDrive\Desktop\Meta-Logo.png" Width="150" Height="50"  />
+        <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" Width="70" Height="70" />
 
-        <StackPanel Grid.Row="0" Grid.Column="1" Margin="2" Orientation="Vertical" Grid.RowSpan="2">
-            <TextBlock Text="Nejc Petkoski" Margin="5" FontSize="18" FontWeight="Bold" Foreground="DarkBlue"/>
-            <TextBlock Text="Ptuj, Slovenija" Margin="5" FontSize="14" Foreground="Gray"/>
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="2" Orientation="Vertical" Grid.RowSpan="2">
+            <TextBlock Text="{Binding MeData.Ime}" Margin="5" FontSize="18" FontWeight="Bold" Foreground="DarkBlue"/>
+            <TextBlock Text="{Binding MeData.Naslov}" Margin="5" FontSize="14" Foreground="Gray"/>
         </StackPanel>
 
 
         <!-- TAB-CONTROL -->
-        <TabControl Grid.Row="2" Grid.Column="1" Width="Auto" Height="Auto" MinWidth="50" MinHeight="50">
+        <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto" MinWidth="50" MinHeight="50">
 
             <!-- WALL -->
             <TabItem Header="WALL">
@@ -113,18 +115,21 @@
 
 
             <!-- ABOUT ME -->
+            <!-- ABOUT ME -->
             <TabItem Header="ABOUT ME" Grid.RowSpan="2">
                 <StackPanel>
                     <Image Width="150" Height="150" Margin="10" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" />
-                    <TextBox Text="Nejc Petkoski"  Width="300" Margin="2"/>
-                    <TextBox Text="Ptuj, Slovenija" Width="300" Margin="2"/>
-                    <TextBox Text="Sem student RIT programa na univerzi FERI" Width="300" Margin="2"/>
-                    <Button Width="30" Height="30" Margin="10">
-                        <Image  Width="25" Height="25"  Source="C:/Users/nejcp/OneDrive/Desktop/11151121_download_arrow_downloading_save_file_icon.png"/>
-                    </Button>
 
+                    <!-- Add two-way data binding to TextBox elements -->
+                    <TextBox Text="{Binding MeData.Ime}" Width="300" Margin="2"/>
+                    <TextBox Text="{Binding MeData.Naslov}" Width="300" Margin="2"/>
+                    <TextBox Text="{Binding MeData.Opis}" Width="300" Margin="2"/>
+
+                    <!-- Button to confirm changes -->
+                    <Button Content="Potrdi" Command="{Binding MeData.SaveUserDataCommand}" Width="75" Height="30" Margin="10"/>
                 </StackPanel>
             </TabItem>
+
 
             <!-- FRIENDS -->
             <TabItem Header="FRIENDS">

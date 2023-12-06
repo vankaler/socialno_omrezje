@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -10,11 +11,18 @@ using System.Windows.Media.Imaging;
 
 namespace socialno_omrezje
 {
-    public class EditPostViewModel : ViewModelBase
+    public class EditPostViewModel : ViewModelBase, INotifyPropertyChanged
     {
         public RelayCommand UpdatePostCommand { get; set; }
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand OpenImageDialogCommand { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         private Data selectedPost;
 
@@ -38,7 +46,7 @@ namespace socialno_omrezje
             set
             {
                 editedContent = value;
-                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(EditedContent));
             }
         }
 
@@ -49,8 +57,15 @@ namespace socialno_omrezje
             set
             {
                 editedImage = value;
-                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(EditedImage));
             }
+        }
+
+        private string editedTitle;
+        public string EditedTitle
+        {
+            get => editedTitle;
+            set => Set(ref editedTitle, value);
         }
 
         public EditPostViewModel(ObservableCollection<Data> wallPosts, Data post)
@@ -88,7 +103,7 @@ namespace socialno_omrezje
             {
                 Title = "Select an Image",
                 Filter = "Image Files (*.jpg; *.jpeg; *.png; *.gif; *.bmp)|*.jpg; *.jpeg; *.png; *.gif; *.bmp|All Files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) // Set initial directory if needed
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) // Set the initial directory if needed
             };
 
             // Show the dialog
@@ -99,7 +114,13 @@ namespace socialno_omrezje
             {
                 // Get the selected file name and set it to the ViewModel property
                 string selectedImagePath = openFileDialog.FileName;
-                EditedImage = ConvertImagePathToBitmapImage(selectedImagePath);
+                BitmapImage newImage = ConvertImagePathToBitmapImage(selectedImagePath);
+
+                // Update the EditedImage property
+                EditedImage = newImage;
+
+                // Notify the UI about the change
+                RaisePropertyChanged(nameof(EditedImage));
             }
         }
 
@@ -107,11 +128,19 @@ namespace socialno_omrezje
         {
             if (!string.IsNullOrEmpty(imagePath))
             {
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-                bitmapImage.EndInit();
-                return bitmapImage;
+                try
+                {
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                    bitmapImage.EndInit();
+                    return bitmapImage;
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle the exception, set a default image, or return null
+                    Console.WriteLine($"Error loading image: {ex.Message}");
+                }
             }
 
             // Return a default image or null if needed
@@ -149,6 +178,7 @@ namespace socialno_omrezje
             // SelectedPost.ResetToOriginalValues();
             // RaisePropertyChanged(nameof(EditedVsebina));
             // RaisePropertyChanged(nameof(EditedContent));
+            // RaisePropertyChanged(nameof(EditedTitle));
         }
 
         private void CloseWindow()
@@ -159,14 +189,6 @@ namespace socialno_omrezje
             {
                 currentWindow.Close();
             }
-        }
-
-        private string editedTitle;
-
-        public string EditedTitle
-        {
-            get => editedTitle;
-            set => Set(ref editedTitle, value);
         }
     }
 }

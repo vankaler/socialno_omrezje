@@ -45,6 +45,68 @@ namespace socialno_omrezje
         }
     }
 
+    public class Me : ViewModelBase
+    {
+        private string ime;
+        public string Ime
+        {
+            get { return ime; }
+            set
+            {
+                ime = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string naslov;
+        public string Naslov
+        {
+            get { return naslov; }
+            set
+            {
+                naslov = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string opis;
+        public string Opis
+        {
+            get { return opis; }
+            set
+            {
+                opis = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public RelayCommand SaveUserDataCommand { get; set; }
+
+        public Me()
+        {
+            SaveUserDataCommand = new RelayCommand(SaveUserData);
+        }
+
+        private void SaveUserData()
+        {
+            // Save user data to application settings
+            SaveUserDataToSettings();
+            MessageBox.Show("User data saved!");
+        }
+
+        private void SaveUserDataToSettings()
+        {
+            // Implement your logic to save user data to application settings here
+            // For example, you can use Properties.Settings.Default
+            // Properties.Settings.Default.Ime = Ime;
+            // Properties.Settings.Default.Naslov = Naslov;
+            // Properties.Settings.Default.Opis = Opis;
+            // Properties.Settings.Default.Save();
+        }
+    }
+
+
+
     public class ViewModel : ViewModelBase
     {
         public ViewModel()
@@ -59,6 +121,7 @@ namespace socialno_omrezje
             DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
             OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
             UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
+            MeData = new Me();
         }
 
         private ObservableCollection<Friend> prijateljiList;
@@ -151,6 +214,17 @@ namespace socialno_omrezje
                 izbranaObjava = value;
                 RaisePropertyChanged();
                 CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
+        private Me meData;
+        public Me MeData
+        {
+            get { return meData; }
+            set
+            {
+                meData = value;
+                RaisePropertyChanged();
             }
         }
 
