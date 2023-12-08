@@ -1,10 +1,8 @@
-﻿using Microsoft.Win32;
+﻿// MainWindow.xaml.cs
+using Microsoft.Win32;
 using System;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace socialno_omrezje
 {
@@ -19,9 +17,8 @@ namespace socialno_omrezje
 
             viewModel = new ViewModel();
             DataContext = viewModel;
-            userProfileEditorControl = new UserProfileEditorControl();
+            userProfileEditorControl = new UserProfileEditorControl(viewModel);
         }
-        
 
         private void exitClick(object sender, RoutedEventArgs e)
         {
@@ -42,7 +39,7 @@ namespace socialno_omrezje
 
             if (openFileDialog.ShowDialog() == true)
             {
-                viewModel.IzbranaObjava.Slika = new BitmapImage(new Uri(openFileDialog.FileName));
+                viewModel.IzbranaObjava.Slika = new System.Windows.Media.Imaging.BitmapImage(new Uri(openFileDialog.FileName));
             }
         }
 
@@ -55,13 +52,10 @@ namespace socialno_omrezje
             {
                 string filePath = openFileDialog.FileName;
 
-                // Deserialize the data from the XML file into a new ViewModel instance
-                var deserializedViewModel = ViewModel.LoadDataFromXml(filePath);
+                // Deserialize the data from the XML file into the existing ViewModel instance
+                viewModel = ViewModel.LoadDataFromXml(filePath);
 
-                // Replace the existing ViewModel with the deserialized data
-                viewModel = deserializedViewModel;
-
-                // Update the DataContext with the new ViewModel
+                // Update the DataContext with the existing ViewModel
                 DataContext = viewModel;
             }
         }
@@ -82,9 +76,9 @@ namespace socialno_omrezje
 
         private void EditProfile_Click(object sender, RoutedEventArgs e)
         {
-            // Set the visibility of the UserProfileEditorControl to Visible
             userProfileEditorControl.Visibility = Visibility.Visible;
         }
     }
 }
+
 

@@ -2,9 +2,11 @@
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
@@ -28,8 +30,19 @@ namespace socialno_omrezje
         [XmlIgnore] public RelayCommand OdstraniCommand { get; set; }
         [XmlIgnore] public RelayCommand UrediCommand { get; set; }
         public ICommand ChangeProfilePictureCommand { get; private set; }
+        public ICommand SaveUserDataCommand { get; }
 
-        
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            RaisePropertyChanged(propertyName);
+            return true;
+        }
+
+
 
 
 
@@ -69,6 +82,14 @@ namespace socialno_omrezje
             set { Set(ref meData, value); }
         }
 
+        private MeData tempMeData;
+        public MeData TempMeData
+        {
+            get { return tempMeData; }
+            set { Set(ref tempMeData, value); }
+        }
+
+
         private PostData izbranaObjava;
         public PostData IzbranaObjava
         {
@@ -79,10 +100,15 @@ namespace socialno_omrezje
         //--------------------------------------------------------------------
         // VIEW-MODEL
         public ViewModel()
-        { // Initialize the non-serializable properties here
+        {
+            // Initialize the non-serializable properties here
             PrijateljiList = new ObservableCollection<FriendData>();
             SeznamObjav = new ObservableCollection<PostData>();
+
+            // Create a new instance for MeData and TempMeData
             MeData = new MeData();
+            TempMeData = new MeData(MeData);
+            SaveUserDataCommand = new RelayCommand(SaveUserData);
 
             ChangeProfilePictureCommand = new RelayCommand(ChangeProfilePicture);
             DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
@@ -93,8 +119,26 @@ namespace socialno_omrezje
             UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
         }
 
+
         //--------------------------------------------------------------------
         // FUNCTIONS
+
+        private void SaveUserData()
+        {
+            
+            TempMeData.Update(MeData);
+            SaveUserDataToSettings();
+            MessageBox.Show("User data updated!");
+        }
+
+        private void SaveUserDataToSettings()
+        {
+        if (MeData != null)
+        {
+            // TODO
+        }
+
+        }
 
         
         private void UrediObjavo()
@@ -283,6 +327,10 @@ namespace socialno_omrezje
             {
                 MeData.Slika = new BitmapImage(new Uri(openFileDialog.FileName));
             }
+        }
+        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }

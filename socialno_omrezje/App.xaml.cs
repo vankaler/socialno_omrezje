@@ -13,5 +13,6 @@ namespace socialno_omrezje
     /// </summary>
     public partial class App : Application
     {
+        public static ViewModel GlobalViewModel { get; } = new ViewModel();
     }
 }

@@ -1,30 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace socialno_omrezje
 {
-    /// <summary>
-    /// Interaction logic for UserControl.xaml
-    /// </summary>
     public partial class UserProfileEditorControl : UserControl
     {
+        public ViewModel ViewModel { get; set; }
+
         public UserProfileEditorControl()
         {
             InitializeComponent();
         }
+
+        public UserProfileEditorControl(ViewModel viewModel) : this()
+        {
+            ViewModel = viewModel;
+            btnSaveChanges.Click += BtnSaveChanges_Click;
+        }
+
+        private void BtnSaveChanges_Click(object sender, RoutedEventArgs e)
+        {
+            // Null check for ViewModel and its properties
+            if (ViewModel != null && ViewModel.MeData != null && ViewModel.TempMeData != null)
+            {
+                ViewModel.MeData.Update(ViewModel.TempMeData);
+                MessageBox.Show("User data updated!");
+
+                // Access TempData here if needed
+                var tempMeData = ViewModel.TempMeData;
+            }
+        }
+
     }
 
     public class IsNullOrEmptyConverter : IValueConverter

@@ -87,11 +87,62 @@ namespace socialno_omrezje
                 }
             }
         }
+        private MeData tempMeData;
+        public MeData TempMeData
+        {
+            get { return tempMeData; }
+            set { Set(ref tempMeData, value); }
+        }
+
+
+        public MeData(MeData other)
+        {
+            Ime = other.Ime;
+            Naslov = other.Naslov;
+            Opis = other.Opis;
+            Slika = other.Slika;
+            CopyFrom(other);
+        }
 
         public MeData()
         {
             SaveUserDataCommand = new RelayCommand(SaveUserData);
             ToggleEditModeCommand = new RelayCommand(ToggleEditMode);
+        }
+
+        public void CopyFrom(MeData other)
+        {
+            Ime = other.Ime;
+            Naslov = other.Naslov;
+            Opis = other.Opis;
+
+            // Ensure the BitmapImage is cloned to avoid reference issues
+            if (other.Slika != null)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(other.Slika));
+                    encoder.Save(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    Slika = new BitmapImage();
+                    Slika.BeginInit();
+                    Slika.CacheOption = BitmapCacheOption.OnLoad;
+                    Slika.StreamSource = stream;
+                    Slika.EndInit();
+                    Slika.Freeze();
+                }
+            }
+            else
+            {
+                Slika = null;
+            }
+        }
+
+        public void Update(MeData other)
+        {
+            CopyFrom(other);
         }
         private void ToggleEditMode()
         {
@@ -100,11 +151,21 @@ namespace socialno_omrezje
 
         private void SaveUserData()
         {
-            SaveUserDataToSettings();
-            MessageBox.Show("User data saved!");
+            Ime = TempMeData.Ime;
+            Naslov = TempMeData.Naslov;
+            Opis = TempMeData.Opis;
+            Slika = TempMeData.Slika;
 
-            // Exit edit mode after saving
-            IsEditMode = false;
+            // Save user data to settings
+            SaveUserDataToSettings();
+
+            // Set TempMeData to a new instance to avoid reference issues
+            TempMeData = new MeData(TempMeData); // Assuming you have a copy constructor
+
+            // Notify that the properties have changed
+            RaisePropertyChanged(nameof(TempMeData));
+
+            MessageBox.Show("User data saved!");
         }
 
         private void SaveUserDataToSettings()
@@ -187,9 +248,7 @@ namespace socialno_omrezje
                 }
             }
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected virtual void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -201,5 +260,7 @@ namespace socialno_omrezje
             info.AddValue(nameof(Naslov), Naslov);
             info.AddValue(nameof(Opis), Opis);
         }
+
     }
+
 }
