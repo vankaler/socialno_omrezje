@@ -3,32 +3,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:socialno_omrezje" d:DataContext="{d:DesignInstance Type=local:ViewModel}"
+        xmlns:local="clr-namespace:socialno_omrezje"
+        d:DataContext="{d:DesignInstance Type=local:ViewModel}"
         mc:Ignorable="d"
         Height="450" Width="800">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="20" />
             <RowDefinition Height="*" />
             <RowDefinition Height="20" />
-            
-            
-
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="70" />
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
-
 
         <!-- MENU -->
         <Menu Grid.Row="1" Grid.Column="0">
-
             <Menu.Resources>
                 <Style TargetType="MenuItem">
                     <Setter Property="Background" Value="White" />
@@ -39,102 +34,73 @@
             <MenuItem Header="File" Width="75">
                 <MenuItem Header="Friends" />
                 <MenuItem Header="Exit" Click="exitClick" />
+                <Separator />
+                <MenuItem Header="Uvozi" Click="Uvozi_Click" />
+                <MenuItem Header="Izvozi" Click="Izvozi_Click" />
             </MenuItem>
+
 
             <MenuItem Header="Post" Width="75">
                 <MenuItem Header="Add" Command="{Binding OpenAddPostWindowCommand}" />
                 <MenuItem Header="Delete" Command="{Binding OdstraniCommand}" />
-                <MenuItem Header="Uredi" Command="{Binding UrediCommand}"  />
+                <MenuItem Header="Uredi" Command="{Binding UrediCommand}" />
             </MenuItem>
         </Menu>
 
 
         <!-- IMAGES -->
-        <Image Grid.Row="0" Source="C:\Users\nejcp\OneDrive\Desktop\Meta-Logo.png" Width="150" Height="50"  />
+        <Image Grid.Row="0" Source="C:\Users\nejcp\OneDrive\Desktop\Meta-Logo.png" Width="150" Height="50" />
         <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" Width="70" Height="70" />
 
         <StackPanel Grid.Row="0" Grid.Column="2" Margin="2" Orientation="Vertical" Grid.RowSpan="2">
-            <TextBlock Text="{Binding MeData.Ime}" Margin="5" FontSize="18" FontWeight="Bold" Foreground="DarkBlue"/>
-            <TextBlock Text="{Binding MeData.Naslov}" Margin="5" FontSize="14" Foreground="Gray"/>
+            <TextBlock Text="{Binding MeData.Ime}" Margin="5" FontSize="18" FontWeight="Bold" Foreground="DarkBlue" />
+            <TextBlock Text="{Binding MeData.Naslov}" Margin="5" FontSize="14" Foreground="Gray" />
         </StackPanel>
-
 
         <!-- TAB-CONTROL -->
         <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto" MinWidth="50" MinHeight="50">
-
             <!-- WALL -->
             <TabItem Header="WALL">
                 <ListView Name="postListView" ItemsSource="{Binding SeznamObjav}" SelectedItem="{Binding IzbranaObjava, Mode=TwoWay}" MouseDoubleClick="postDoubleClick">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Title" Width="Auto" DisplayMemberBinding="{Binding Vsebina}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Vsebina}" FontWeight="Bold" Margin="0"  FontSize="16" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Slika}" Width="50" Height="50" Stretch="UniformToFill" />
+                                <TextBlock Text="{Binding Vsebina}" FontWeight="Bold" Margin="5" FontSize="16" />
+                                <TextBlock Text="{Binding Content}" FontWeight="Bold" Margin="5" Width="Auto" FontSize="16" />
+                                <TextBlock Text="{Binding DatumObjave}" Margin="5" FontSize="16" />
+                                <TextBlock Text="{Binding Likes}" Margin="5" FontSize="20" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
 
-                            
-
-                            <GridViewColumn Header="Image" Width="Auto">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding Slika}" Width="50" Height="50" Stretch="UniformToFill" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Content" Width="Auto" DisplayMemberBinding="{Binding Content}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Content}" FontWeight="Bold" Margin="0" Width="Auto"  FontSize="16" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Date of Post" Width="Auto" DisplayMemberBinding="{Binding DatumObjave}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DatumObjave}" Margin="5"  FontSize="16"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Likes" Width="Auto" DisplayMemberBinding="{Binding Likes}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Likes}" Margin="5"  FontSize="20"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Prijatelji.Count}" Value="0">
+                                    <Setter Property="Background" Value="LightCoral" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
             </TabItem>
 
-
-            <!-- ABOUT ME -->
             <!-- ABOUT ME -->
             <TabItem Header="ABOUT ME" Grid.RowSpan="2">
                 <StackPanel>
                     <Image Width="150" Height="150" Margin="10" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" />
-
-                    <!-- Add two-way data binding to TextBox elements -->
-                    <TextBox Text="{Binding MeData.Ime}" Width="300" Margin="2"/>
-                    <TextBox Text="{Binding MeData.Naslov}" Width="300" Margin="2"/>
-                    <TextBox Text="{Binding MeData.Opis}" Width="300" Margin="2"/>
-
-                    <!-- Button to confirm changes -->
-                    <Button Content="Potrdi" Command="{Binding MeData.SaveUserDataCommand}" Width="75" Height="30" Margin="10"/>
+                    <TextBox Text="{Binding MeData.Ime}" Width="300" Margin="2" />
+                    <TextBox Text="{Binding MeData.Naslov}" Width="300" Margin="2" />
+                    <TextBox Text="{Binding MeData.Opis}" Width="300" Margin="2" />
+                    <Button Content="Potrdi" Command="{Binding MeData.SaveUserDataCommand}" Width="75" Height="30" Margin="10" />
                 </StackPanel>
             </TabItem>
-
 
             <!-- FRIENDS -->
             <TabItem Header="FRIENDS">
                 <StackPanel>
-                    <ListView ItemsSource="{Binding PrijateljiList}">
+                    <ListView ItemsSource="{Binding PrijateljiList}" SelectedItem="{Binding IzbraniPrijatelj, Mode=TwoWay}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Image" Width="100">
@@ -158,27 +124,19 @@
                         </ListView.View>
                     </ListView>
 
-
-                    <!-- Add Friend Button -->
                     <Button Content="Add Friend" Command="{Binding DodajPrijateljaCommand}" />
+                    <Button Content="Remove Friend" Command="{Binding OdstraniPrijateljaCommand}"/>
+                    <Button Content="Edit Friend" Command="{Binding UrediPrijateljaCommand}"/>
 
-                    <!-- Remove Friend Button -->
-                    <Button Content="Remove Friend" Command="{Binding OdstraniPrijateljaCommand}"  IsEnabled="{Binding CanOdstraniPrijatelja}" />
-
-                    <!-- Edit Friend Button -->
-                    <Button Content="Edit Friend" Command="{Binding UrediPrijateljaCommand}" 
-                IsEnabled="{Binding CanUrediPrijatelja}" />
                 </StackPanel>
             </TabItem>
-
         </TabControl>
 
-        <Label Grid.Row="2" Grid.Column="0" Margin="0, 0, 0, 0" Padding="0, 0, 0, 0" >
-            
-        </Label>
         <Label Grid.Row="2" Grid.Column="0" Margin="0, 0, 0, 0" Padding="0, 0, 0, 0">
-            <Image Source="{Binding IzbranaObjava.Slika}" Width="150" Height="150" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+        </Label>
+
+        <Label Grid.Row="2" Grid.Column="0" Margin="0, 0, 0, 0" Padding="0, 0, 0, 0">
+            <Image Source="{Binding IzbranaObjava.Slika}" Width="150" Height="150" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
         </Label>
     </Grid>
-
 </Window>

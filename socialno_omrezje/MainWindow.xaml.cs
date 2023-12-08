@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -7,7 +9,6 @@ using System.Windows.Media.Imaging;
 namespace socialno_omrezje
 {
     public partial class MainWindow : Window
-        
     {
         private ViewModel viewModel;
 
@@ -16,9 +17,9 @@ namespace socialno_omrezje
             InitializeComponent();
 
             viewModel = new ViewModel();
-
             DataContext = viewModel;
         }
+        
 
         private void exitClick(object sender, RoutedEventArgs e)
         {
@@ -27,7 +28,7 @@ namespace socialno_omrezje
 
         private void postDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show( viewModel.IzbranaObjava.Content, "Content");
+            MessageBox.Show(viewModel.IzbranaObjava.Content, "Content");
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -43,5 +44,34 @@ namespace socialno_omrezje
             }
         }
 
+        private void Uvozi_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "XML Files (*.xml)|*.xml";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+
+                // Load the data from the XML file using the existing ViewModel instance
+                viewModel = ViewModel.LoadDataFromXml(filePath);
+
+                // Update the DataContext with the modified ViewModel
+                DataContext = viewModel;
+            }
+        }
+
+        private void Izvozi_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "XML Files (*.xml)|*.xml";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string filePath = saveFileDialog.FileName;
+                viewModel.SaveDataToXml(filePath);
+            }
+        }
     }
 }
+

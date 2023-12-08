@@ -53,13 +53,13 @@ public class AddPostViewModel : ViewModelBase
         }
     }
 
-    public ObservableCollection<Data> WallPosts { get; set; }
+    public ObservableCollection<PostData> WallPosts { get; set; }
 
     public RelayCommand OpenImageDialogCommand { get; set; }
     public RelayCommand AddPostCommand { get; set; }
     public RelayCommand GoBackCommand { get; set; }
 
-    public AddPostViewModel(ObservableCollection<Data> wallPosts)
+    public AddPostViewModel(ObservableCollection<PostData> wallPosts)
     {
         WallPosts = wallPosts;
 
@@ -83,17 +83,21 @@ public class AddPostViewModel : ViewModelBase
 
     private void AddPost()
     {
-        WallPosts.Add(new Data
-        {
-            Vsebina = Description,
-            Content = Title,
-            Slika = SelectedImage,
-            DatumObjave = DateTime.Now,
-            Likes = new Random().Next(0, 101),
-        });
 
-        // Close the addPostWindow
-        Close();
+        if (Description != null && Title != null && SelectedImage != null)
+        {
+            WallPosts.Add(new PostData
+            {
+                Vsebina = Description,
+                Content = Title,
+                Slika = SelectedImage,
+                DatumObjave = DateTime.Now,
+                Likes = new Random().Next(0, 101),
+            });
+
+            // Close the addPostWindow
+            Close();
+        }
     }
 
     private void GoBack()

@@ -9,7 +9,7 @@ namespace socialno_omrezje
     {
         private EditPostViewModel viewModel;
 
-        public editPostWindow(ObservableCollection<Data> wallPosts, Data selectedPost)
+        public editPostWindow(ObservableCollection<PostData> wallPosts, PostData selectedPost)
         {
             InitializeComponent();
 

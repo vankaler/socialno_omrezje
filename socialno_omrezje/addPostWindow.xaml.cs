@@ -20,8 +20,9 @@ namespace socialno_omrezje
     public partial class addPostWindow : Window
     {
         private AddPostViewModel viewModel;
+        private ObservableCollection<PostData> seznamObjav;
 
-        public addPostWindow(ObservableCollection<Data> wallPosts)
+        public addPostWindow(ObservableCollection<PostData> wallPosts)
         {
             InitializeComponent();
             viewModel = new AddPostViewModel(wallPosts);

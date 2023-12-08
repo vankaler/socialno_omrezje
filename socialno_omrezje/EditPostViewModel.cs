@@ -24,9 +24,9 @@ namespace socialno_omrezje
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private Data selectedPost;
+        private PostData selectedPost;
 
-        public ObservableCollection<Data> WallPosts { get; set; }
+        public ObservableCollection<PostData> WallPosts { get; set; }
 
         private string editedVsebina;
         public string EditedVsebina
@@ -61,14 +61,11 @@ namespace socialno_omrezje
             }
         }
 
-        private string editedTitle;
-        public string EditedTitle
-        {
-            get => editedTitle;
-            set => Set(ref editedTitle, value);
-        }
 
-        public EditPostViewModel(ObservableCollection<Data> wallPosts, Data post)
+
+
+
+        public EditPostViewModel(ObservableCollection<PostData> wallPosts, PostData post)
         {
             // Initialize properties with values from the provided 'post'
             SelectedPost = post;
@@ -86,7 +83,11 @@ namespace socialno_omrezje
             OpenImageDialogCommand = new RelayCommand(OpenImageDialog);
         }
 
-        public Data SelectedPost
+
+
+
+
+        public PostData SelectedPost
         {
             get { return selectedPost; }
             set

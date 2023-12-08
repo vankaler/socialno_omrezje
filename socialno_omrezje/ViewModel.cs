@@ -3,254 +3,92 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 namespace socialno_omrezje
 {
-    public class Friend : ViewModelBase
+    [Serializable]
+    public class ViewModel : ViewModelBase, ISerializable
     {
-        private string ime;
-        public string Ime
-        {
-            get { return ime; }
-            set
-            {
-                ime = value;
-                RaisePropertyChanged();
-            }
-        }
 
-        private BitmapImage slika;
-        public BitmapImage Slika
-        {
-            get { return slika; }
-            set
-            {
-                slika = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private string status;
-        public string Status
-        {
-            get { return status; }
-            set
-            {
-                status = value;
-                RaisePropertyChanged();
-            }
-        }
-    }
-
-    public class Me : ViewModelBase
-    {
-        private string ime;
-        public string Ime
-        {
-            get { return ime; }
-            set
-            {
-                ime = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private string naslov;
-        public string Naslov
-        {
-            get { return naslov; }
-            set
-            {
-                naslov = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private string opis;
-        public string Opis
-        {
-            get { return opis; }
-            set
-            {
-                opis = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public RelayCommand SaveUserDataCommand { get; set; }
-
-        public Me()
-        {
-            SaveUserDataCommand = new RelayCommand(SaveUserData);
-        }
-
-        private void SaveUserData()
-        {
-            // Save user data to application settings
-            SaveUserDataToSettings();
-            MessageBox.Show("User data saved!");
-        }
-
-        private void SaveUserDataToSettings()
-        {
-            // Implement your logic to save user data to application settings here
-            // For example, you can use Properties.Settings.Default
-            // Properties.Settings.Default.Ime = Ime;
-            // Properties.Settings.Default.Naslov = Naslov;
-            // Properties.Settings.Default.Opis = Opis;
-            // Properties.Settings.Default.Save();
-        }
-    }
+        [XmlIgnore] public RelayCommand DodajPrijateljaCommand { get; set; }
+        [XmlIgnore] public RelayCommand OdstraniPrijateljaCommand { get; set; }
+        [XmlIgnore] public RelayCommand UrediPrijateljaCommand { get; set; }
+        [XmlIgnore] public RelayCommand OpenAddPostWindowCommand { get; set; }
+        [XmlIgnore] public RelayCommand OpenImageDialogCommand { get; set; }
+        [XmlIgnore] public RelayCommand OdstraniCommand { get; set; }
+        [XmlIgnore] public RelayCommand UrediCommand { get; set; }
 
 
+        //--------------------------------------------------------------------
+        // OBSERVABLE-COLLECTIONS
+        public ObservableCollection<PostData> WallPosts { get; set; }
 
-    public class ViewModel : ViewModelBase
-    {
-        public ViewModel()
-        {
-            SeznamObjav = new ObservableCollection<Data>();
-            PrijateljiList = new ObservableCollection<Friend>();
-            OdstraniCommand = new RelayCommand(OdstraniObjavo, CanOdstrani);
-            UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
-            GoBackCommand = new RelayCommand(GoBack);
-            OpenAddPostWindowCommand = new RelayCommand(OpenAddPostWindow);
-            OpenImageDialogCommand = new RelayCommand(() => OpenImageDialog());
-            DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
-            OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
-            UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
-            MeData = new Me();
-        }
-
-        private ObservableCollection<Friend> prijateljiList;
-        public ObservableCollection<Friend> PrijateljiList
+        private ObservableCollection<FriendData> prijateljiList;
+        public ObservableCollection<FriendData> PrijateljiList
         {
             get { return prijateljiList; }
             set
             {
-                prijateljiList = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public ICommand DodajPrijateljaCommand { get; set; }
-        public ICommand OdstraniPrijateljaCommand { get; set; }
-        public ICommand UrediPrijateljaCommand { get; set; }
-
-        // Add these methods to handle friend operations
-        private void DodajPrijatelja()
-        {
-            // Implement logic to add a friend
-            BitmapImage image = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/facebook_image.jpg"));
-            PrijateljiList.Add(new Friend
-            {
-                Ime = "New Friend",
-                Slika = image,
-                Status = GetRandomStatus()
-            });
-            RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
-            RaisePropertyChanged(nameof(CanUrediPrijatelja));
-        }
-
-        private void OdstraniPrijatelja()
-        {
-            // Implement logic to remove a friend
-            if (PrijateljiList.Count > 0)
-            {
-                PrijateljiList.RemoveAt(0);
+                Set(ref prijateljiList, value);
                 RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
                 RaisePropertyChanged(nameof(CanUrediPrijatelja));
             }
         }
-
-        public bool CanOdstraniPrijatelja
+        private FriendData izbraniPrijatelj;
+        public FriendData IzbraniPrijatelj
         {
-            get { return PrijateljiList.Count > 0; }
+            get { return izbraniPrijatelj; }
+            set { Set(ref izbraniPrijatelj, value); }
         }
 
-        private void UrediPrijatelja()
-        {
-            if (PrijateljiList.Count > 0)
-            {
-                PrijateljiList[0].Ime = "Edited Friend";
-                RaisePropertyChanged(nameof(CanUrediPrijatelja));
-            }
-        }
-
-        public bool CanUrediPrijatelja
-        {
-            get { return PrijateljiList.Count > 0; }
-        }
-
-        private string GetRandomStatus()
-        {
-            // Generates a random status (online or offline)
-            Random random = new Random();
-            return random.Next(2) == 0 ? "Online" : "Offline";
-        }
-
-        public RelayCommand OpenAddPostWindowCommand { get; set; }
-        public RelayCommand OpenImageDialogCommand { get; set; }
-
-        private ObservableCollection<Data> seznamObjav;
-        public ObservableCollection<Data> SeznamObjav
+        private ObservableCollection<PostData> seznamObjav;
+        public ObservableCollection<PostData> SeznamObjav
         {
             get { return seznamObjav; }
-            set
-            {
-                seznamObjav = value;
-                RaisePropertyChanged();
-            }
+            set { Set(ref seznamObjav, value); }
         }
 
-        private Data izbranaObjava;
-        public Data IzbranaObjava
-        {
-            get { return izbranaObjava; }
-            set
-            {
-                izbranaObjava = value;
-                RaisePropertyChanged();
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
-
-        private Me meData;
-        public Me MeData
+        private MeData meData;
+        public MeData MeData
         {
             get { return meData; }
-            set
-            {
-                meData = value;
-                RaisePropertyChanged();
-            }
+            set { Set(ref meData, value); }
         }
 
-        public ICommand DodajCommand { get; set; }
-        public ICommand OdstraniCommand { get; set; }
-        public ICommand UrediCommand { get; set; }
-        public ICommand GoBackCommand { get; }
+        private PostData izbranaObjava;
+        public PostData IzbranaObjava
+        {
+            get { return izbranaObjava; }
+            set { Set(ref izbranaObjava, value); }
+        }
 
-        private void OdstraniObjavo()
+        //--------------------------------------------------------------------
+        // VIEW-MODEL
+        public ViewModel()
+        { // Initialize the non-serializable properties here
+            PrijateljiList = new ObservableCollection<FriendData>();
+            SeznamObjav = new ObservableCollection<PostData>();
+            MeData = new MeData();
+
+            DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
+            OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
+            UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
+            OpenAddPostWindowCommand = new RelayCommand(OpenAddPostWindow);
+            OpenImageDialogCommand = new RelayCommand(OpenImageDialog);
+            UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
+        }
+
+            //--------------------------------------------------------------------
+            // FUNCTIONS
+            private void UrediObjavo()
         {
             if (IzbranaObjava != null)
             {
-                SeznamObjav.Remove(IzbranaObjava);
-            }
-        }
-
-        private bool CanOdstrani()
-        {
-            return true;
-        }
-
-        private void UrediObjavo()
-        {
-            if (IzbranaObjava != null)
-            {
-                // Open the editPostWindow with the selected post
                 editPostWindow editWindow = new editPostWindow(SeznamObjav, IzbranaObjava);
                 editWindow.ShowDialog();
             }
@@ -261,10 +99,48 @@ namespace socialno_omrezje
             return true;
         }
 
-        private void GoBack()
+
+        private void DodajPrijatelja()
         {
-            var currentWindow = Application.Current.MainWindow;
-            currentWindow.Close();
+            PrijateljiList.Add(new FriendData
+            {
+                Ime = "New Friend",
+                Slika = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/facebook_image.jpg")),
+                Status = GetRandomStatus()
+            });
+        }
+
+        private void OdstraniPrijatelja()
+        {
+            if (IzbraniPrijatelj != null)
+            {
+                PrijateljiList.Remove(IzbraniPrijatelj);
+            }
+        }
+
+        public bool CanOdstraniPrijatelja() 
+        {
+            return true;
+        } 
+
+        private void UrediPrijatelja()
+        {
+            if (IzbraniPrijatelj != null)
+            {
+                IzbraniPrijatelj.Ime = "Edited Friend";
+                RaisePropertyChanged(nameof(CanUrediPrijatelja));
+            }
+        }
+
+        public bool CanUrediPrijatelja() 
+        {
+            return true;
+        }
+
+        private string GetRandomStatus()
+        {
+            Random random = new Random();
+            return random.Next(2) == 0 ? "Online" : "Offline";
         }
 
         private void OpenAddPostWindow()
@@ -284,8 +160,54 @@ namespace socialno_omrezje
 
             if (openFileDialog.ShowDialog() == true)
             {
-                // Process the selected image
                 string selectedImagePath = openFileDialog.FileName;
+            }
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(SeznamObjav), SeznamObjav);
+            info.AddValue(nameof(PrijateljiList), PrijateljiList);
+            info.AddValue(nameof(MeData), MeData);
+        }
+        public static ViewModel LoadDataFromXml(string filePath)
+        {
+            try
+            {
+                using (var fs = new FileStream(filePath, FileMode.Open))
+                {
+                    var serializer = new XmlSerializer(typeof(ViewModel));
+                    var viewModel = (ViewModel)serializer.Deserialize(fs);
+
+                    // Make sure PrijateljiList is not null
+                    if (viewModel.PrijateljiList == null)
+                        viewModel.PrijateljiList = new ObservableCollection<FriendData>();
+
+                    return viewModel;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading data from XML: {ex.Message}", "Error");
+                return null;
+            }
+        }
+
+
+        public void SaveDataToXml(string filePath)
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(ViewModel));
+                using (TextWriter writer = new StreamWriter(filePath))
+                {
+                    
+                    serializer.Serialize(writer, this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving data to XML: {ex.Message}", "Error");
             }
         }
     }
