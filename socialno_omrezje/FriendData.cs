@@ -16,9 +16,9 @@ namespace socialno_omrezje
     [Serializable]
     public class FriendData : ViewModelBase, ISerializable
     {
-        [XmlIgnore] public RelayCommand DodajPrijateljaCommand { get; set; }
-        [XmlIgnore] public RelayCommand OdstraniPrijateljaCommand { get; set; }
-        [XmlIgnore] public RelayCommand UrediPrijateljaCommand { get; set; }
+        public RelayCommand DodajPrijateljaCommand { get; set; }
+        public RelayCommand OdstraniPrijateljaCommand { get; set; }
+        public RelayCommand UrediPrijateljaCommand { get; set; }
 
         private string ime;
         public string Ime
@@ -100,8 +100,6 @@ namespace socialno_omrezje
             RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
             RaisePropertyChanged(nameof(CanUrediPrijatelja));
 
-            // Save the added friend to XML
-            SaveDataToXml();
         }
 
         private void OdstraniPrijatelja()
@@ -113,8 +111,6 @@ namespace socialno_omrezje
                 RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
                 RaisePropertyChanged(nameof(CanUrediPrijatelja));
 
-                // Save the modified friend list to XML
-                SaveDataToXml();
             }
         }
 
@@ -130,8 +126,6 @@ namespace socialno_omrezje
                 PrijateljiList[0].Ime = "Edited Friend";
                 RaisePropertyChanged(nameof(CanUrediPrijatelja));
 
-                // Save the modified friend list to XML
-                SaveDataToXml();
             }
         }
 
@@ -146,7 +140,7 @@ namespace socialno_omrezje
             return random.Next(2) == 0 ? "Online" : "Offline";
         }
 
-        public void SaveDataToXml()
+        public void SaveDataToXml(System.Xml.XmlTextWriter xmlWriter)
         {
             var saveFileDialog = new SaveFileDialog
             {

@@ -11,6 +11,7 @@ namespace socialno_omrezje
     public partial class MainWindow : Window
     {
         private ViewModel viewModel;
+        private UserProfileEditorControl userProfileEditorControl;
 
         public MainWindow()
         {
@@ -18,6 +19,7 @@ namespace socialno_omrezje
 
             viewModel = new ViewModel();
             DataContext = viewModel;
+            userProfileEditorControl = new UserProfileEditorControl();
         }
         
 
@@ -53,10 +55,13 @@ namespace socialno_omrezje
             {
                 string filePath = openFileDialog.FileName;
 
-                // Load the data from the XML file using the existing ViewModel instance
-                viewModel = ViewModel.LoadDataFromXml(filePath);
+                // Deserialize the data from the XML file into a new ViewModel instance
+                var deserializedViewModel = ViewModel.LoadDataFromXml(filePath);
 
-                // Update the DataContext with the modified ViewModel
+                // Replace the existing ViewModel with the deserialized data
+                viewModel = deserializedViewModel;
+
+                // Update the DataContext with the new ViewModel
                 DataContext = viewModel;
             }
         }
@@ -69,8 +74,16 @@ namespace socialno_omrezje
             if (saveFileDialog.ShowDialog() == true)
             {
                 string filePath = saveFileDialog.FileName;
+
+                // Serialize the current ViewModel instance to an XML file
                 viewModel.SaveDataToXml(filePath);
             }
+        }
+
+        private void EditProfile_Click(object sender, RoutedEventArgs e)
+        {
+            // Set the visibility of the UserProfileEditorControl to Visible
+            userProfileEditorControl.Visibility = Visibility.Visible;
         }
     }
 }

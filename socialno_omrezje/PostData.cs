@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Windows.Media.Imaging;
+using System.Xml;
 
 namespace socialno_omrezje
 {
@@ -217,6 +218,11 @@ namespace socialno_omrezje
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        internal void SaveDataToXml(XmlTextWriter xmlWriter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

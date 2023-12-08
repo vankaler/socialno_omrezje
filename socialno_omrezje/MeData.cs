@@ -8,6 +8,7 @@ using System.Windows;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Windows.Media.Imaging;
 
 namespace socialno_omrezje
 {
@@ -15,6 +16,7 @@ namespace socialno_omrezje
     public class MeData : ViewModelBase, ISerializable, INotifyPropertyChanged
     {
         [XmlIgnore] public RelayCommand SaveUserDataCommand { get; set; }
+        [XmlIgnore] public RelayCommand ToggleEditModeCommand { get; set; }
 
         private string ime;
         public string Ime
@@ -26,6 +28,20 @@ namespace socialno_omrezje
                 {
                     ime = value;
                     RaisePropertyChanged(nameof(Ime));
+                }
+            }
+        }
+
+        private BitmapImage slika;
+        public BitmapImage Slika
+        {
+            get { return slika; }
+            set
+            {
+                if (slika != value)
+                {
+                    slika = value;
+                    RaisePropertyChanged(nameof(Slika));
                 }
             }
         }
@@ -58,53 +74,62 @@ namespace socialno_omrezje
             }
         }
 
+        private bool isEditMode;
+        public bool IsEditMode
+        {
+            get { return isEditMode; }
+            set
+            {
+                if (isEditMode != value)
+                {
+                    isEditMode = value;
+                    RaisePropertyChanged(nameof(IsEditMode));
+                }
+            }
+        }
+
         public MeData()
         {
             SaveUserDataCommand = new RelayCommand(SaveUserData);
+            ToggleEditModeCommand = new RelayCommand(ToggleEditMode);
+        }
+        private void ToggleEditMode()
+        {
+            IsEditMode = !IsEditMode;
         }
 
         private void SaveUserData()
         {
             SaveUserDataToSettings();
             MessageBox.Show("User data saved!");
+
+            // Exit edit mode after saving
+            IsEditMode = false;
         }
 
         private void SaveUserDataToSettings()
         {
-            // Save user data to configuration file
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            if (IsEditMode)
+            {
+                // Save user data to configuration file
+                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            // Add or update settings
-            if (config.AppSettings.Settings["Ime"] == null)
-            {
-                config.AppSettings.Settings.Add("Ime", Ime);
-            }
-            else
-            {
-                config.AppSettings.Settings["Ime"].Value = Ime;
-            }
+                // Add or update settings
+                if (config.AppSettings.Settings["Ime"] == null)
+                {
+                    config.AppSettings.Settings.Add("Ime", Ime);
+                }
+                else
+                {
+                    config.AppSettings.Settings["Ime"].Value = Ime;
+                }
 
-            if (config.AppSettings.Settings["Naslov"] == null)
-            {
-                config.AppSettings.Settings.Add("Naslov", Naslov);
-            }
-            else
-            {
-                config.AppSettings.Settings["Naslov"].Value = Naslov;
-            }
+                // ... (similar updates for other properties)
 
-            if (config.AppSettings.Settings["Opis"] == null)
-            {
-                config.AppSettings.Settings.Add("Opis", Opis);
+                // Save changes
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
             }
-            else
-            {
-                config.AppSettings.Settings["Opis"].Value = Opis;
-            }
-
-            // Save changes
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("appSettings");
         }
 
         public static MeData LoadDataFromXml()

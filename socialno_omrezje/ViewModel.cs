@@ -3,16 +3,21 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
+using System.Text;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace socialno_omrezje
 {
     [Serializable]
-    public class ViewModel : ViewModelBase, ISerializable
+    public class ViewModel : ViewModelBase, ISerializable, INotifyPropertyChanged
     {
 
         [XmlIgnore] public RelayCommand DodajPrijateljaCommand { get; set; }
@@ -22,6 +27,10 @@ namespace socialno_omrezje
         [XmlIgnore] public RelayCommand OpenImageDialogCommand { get; set; }
         [XmlIgnore] public RelayCommand OdstraniCommand { get; set; }
         [XmlIgnore] public RelayCommand UrediCommand { get; set; }
+        public ICommand ChangeProfilePictureCommand { get; private set; }
+
+        
+
 
 
         //--------------------------------------------------------------------
@@ -75,6 +84,7 @@ namespace socialno_omrezje
             SeznamObjav = new ObservableCollection<PostData>();
             MeData = new MeData();
 
+            ChangeProfilePictureCommand = new RelayCommand(ChangeProfilePicture);
             DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
             OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
             UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
@@ -83,9 +93,11 @@ namespace socialno_omrezje
             UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
         }
 
-            //--------------------------------------------------------------------
-            // FUNCTIONS
-            private void UrediObjavo()
+        //--------------------------------------------------------------------
+        // FUNCTIONS
+
+        
+        private void UrediObjavo()
         {
             if (IzbranaObjava != null)
             {
@@ -118,10 +130,10 @@ namespace socialno_omrezje
             }
         }
 
-        public bool CanOdstraniPrijatelja() 
+        public bool CanOdstraniPrijatelja()
         {
             return true;
-        } 
+        }
 
         private void UrediPrijatelja()
         {
@@ -132,7 +144,7 @@ namespace socialno_omrezje
             }
         }
 
-        public bool CanUrediPrijatelja() 
+        public bool CanUrediPrijatelja()
         {
             return true;
         }
@@ -198,11 +210,61 @@ namespace socialno_omrezje
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(ViewModel));
-                using (TextWriter writer = new StreamWriter(filePath))
+                // Create a new SerializationInfo object
+                var serializationInfo = new SerializationInfo(typeof(ViewModel), new FormatterConverter());
+
+                // Add the PrijateljiList collection to the serialization info
+                serializationInfo.AddValue("PrijateljiList", PrijateljiList);
+
+                // Add the SeznamObjav collection to the serialization info
+                serializationInfo.AddValue("SeznamObjav", SeznamObjav);
+
+                // Add the MeData property to the serialization info
+                serializationInfo.AddValue("MeData", MeData);
+
+                // Create an XmlWriter to write to the XML file
+                using (var streamWriter = new StreamWriter(filePath))
                 {
-                    
-                    serializer.Serialize(writer, this);
+                    var xmlWriter = new XmlTextWriter(streamWriter);
+                    xmlWriter.Formatting = Formatting.Indented;
+
+                    // Start an XML document
+                    xmlWriter.WriteStartDocument();
+
+                    // Write the PrijateljiList collection
+                    xmlWriter.WriteStartElement("PrijateljiList");
+                    foreach (var prijatelj in PrijateljiList)
+                    {
+                        prijatelj.SaveDataToXml(xmlWriter); // Recursively serialize each prijatelj
+                    }
+                    xmlWriter.WriteEndElement(); // Close PrijateljiList element
+
+                    // Write the SeznamObjav collection
+                    xmlWriter.WriteStartElement("SeznamObjav");
+                    foreach (var objava in SeznamObjav)
+                    {
+                        objava.SaveDataToXml(xmlWriter); // Recursively serialize each objava
+                    }
+                    xmlWriter.WriteEndElement(); // Close SeznamObjav element
+
+                    // Write the MeData property
+                    xmlWriter.WriteStartElement("MeData");
+                    foreach (var property in MeData.GetType().GetProperties())
+                    {
+                        var value = property.GetValue(MeData);
+                        if (value != null)
+                        {
+                            xmlWriter.WriteStartElement(property.Name);
+                            xmlWriter.WriteString(value.ToString());
+                            xmlWriter.WriteEndElement();
+                        }
+                    }
+                    xmlWriter.WriteEndElement(); // Close MeData element
+
+                    // End the XML document
+                    xmlWriter.WriteEndDocument();
+                    xmlWriter.Flush();
+                    xmlWriter.Close();
                 }
             }
             catch (Exception ex)
@@ -210,5 +272,18 @@ namespace socialno_omrezje
                 MessageBox.Show($"Error saving data to XML: {ex.Message}", "Error");
             }
         }
+        private void ChangeProfilePicture()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Image Files |*.jpg;*.jpeg;*.png|All Files |*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                MeData.Slika = new BitmapImage(new Uri(openFileDialog.FileName));
+            }
+        }
+
     }
-}
+} 

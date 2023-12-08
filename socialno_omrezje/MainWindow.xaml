@@ -7,6 +7,10 @@
         d:DataContext="{d:DesignInstance Type=local:ViewModel}"
         mc:Ignorable="d"
         Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -89,13 +93,13 @@
             <!-- ABOUT ME -->
             <TabItem Header="ABOUT ME" Grid.RowSpan="2">
                 <StackPanel>
-                    <Image Width="150" Height="150" Margin="10" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" />
-                    <TextBox Text="{Binding MeData.Ime}" Width="300" Margin="2" />
-                    <TextBox Text="{Binding MeData.Naslov}" Width="300" Margin="2" />
-                    <TextBox Text="{Binding MeData.Opis}" Width="300" Margin="2" />
-                    <Button Content="Potrdi" Command="{Binding MeData.SaveUserDataCommand}" Width="75" Height="30" Margin="10" />
+                    
+                    <local:UserProfileEditorControl></local:UserProfileEditorControl>
                 </StackPanel>
+                
             </TabItem>
+
+
 
             <!-- FRIENDS -->
             <TabItem Header="FRIENDS">
