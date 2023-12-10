@@ -42,14 +42,9 @@ namespace socialno_omrezje
             return true;
         }
 
-
-
-
-
         //--------------------------------------------------------------------
         // OBSERVABLE-COLLECTIONS
         public ObservableCollection<PostData> WallPosts { get; set; }
-
         private ObservableCollection<FriendData> prijateljiList;
         public ObservableCollection<FriendData> PrijateljiList
         {
@@ -125,7 +120,6 @@ namespace socialno_omrezje
 
         private void SaveUserData()
         {
-            
             TempMeData.Update(MeData);
             SaveUserDataToSettings();
             MessageBox.Show("User data updated!");
@@ -226,96 +220,31 @@ namespace socialno_omrezje
             info.AddValue(nameof(PrijateljiList), PrijateljiList);
             info.AddValue(nameof(MeData), MeData);
         }
-        public static ViewModel LoadDataFromXml(string filePath)
+        public static void SaveData<T>(T data, string filePath)
         {
-            try
-            {
-                using (var fs = new FileStream(filePath, FileMode.Open))
-                {
-                    var serializer = new XmlSerializer(typeof(ViewModel));
-                    var viewModel = (ViewModel)serializer.Deserialize(fs);
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
 
-                    // Make sure PrijateljiList is not null
-                    if (viewModel.PrijateljiList == null)
-                        viewModel.PrijateljiList = new ObservableCollection<FriendData>();
-
-                    return viewModel;
-                }
-            }
-            catch (Exception ex)
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
-                MessageBox.Show($"Error loading data from XML: {ex.Message}", "Error");
-                return null;
+                serializer.Serialize(writer, data);
             }
         }
 
-
-        public void SaveDataToXml(string filePath)
+        public static T LoadData<T>(string filePath)
         {
-            try
+            if (!File.Exists(filePath))
             {
-                // Create a new SerializationInfo object
-                var serializationInfo = new SerializationInfo(typeof(ViewModel), new FormatterConverter());
-
-                // Add the PrijateljiList collection to the serialization info
-                serializationInfo.AddValue("PrijateljiList", PrijateljiList);
-
-                // Add the SeznamObjav collection to the serialization info
-                serializationInfo.AddValue("SeznamObjav", SeznamObjav);
-
-                // Add the MeData property to the serialization info
-                serializationInfo.AddValue("MeData", MeData);
-
-                // Create an XmlWriter to write to the XML file
-                using (var streamWriter = new StreamWriter(filePath))
-                {
-                    var xmlWriter = new XmlTextWriter(streamWriter);
-                    xmlWriter.Formatting = Formatting.Indented;
-
-                    // Start an XML document
-                    xmlWriter.WriteStartDocument();
-
-                    // Write the PrijateljiList collection
-                    xmlWriter.WriteStartElement("PrijateljiList");
-                    foreach (var prijatelj in PrijateljiList)
-                    {
-                        prijatelj.SaveDataToXml(xmlWriter); // Recursively serialize each prijatelj
-                    }
-                    xmlWriter.WriteEndElement(); // Close PrijateljiList element
-
-                    // Write the SeznamObjav collection
-                    xmlWriter.WriteStartElement("SeznamObjav");
-                    foreach (var objava in SeznamObjav)
-                    {
-                        objava.SaveDataToXml(xmlWriter); // Recursively serialize each objava
-                    }
-                    xmlWriter.WriteEndElement(); // Close SeznamObjav element
-
-                    // Write the MeData property
-                    xmlWriter.WriteStartElement("MeData");
-                    foreach (var property in MeData.GetType().GetProperties())
-                    {
-                        var value = property.GetValue(MeData);
-                        if (value != null)
-                        {
-                            xmlWriter.WriteStartElement(property.Name);
-                            xmlWriter.WriteString(value.ToString());
-                            xmlWriter.WriteEndElement();
-                        }
-                    }
-                    xmlWriter.WriteEndElement(); // Close MeData element
-
-                    // End the XML document
-                    xmlWriter.WriteEndDocument();
-                    xmlWriter.Flush();
-                    xmlWriter.Close();
-                }
+                return default(T);
             }
-            catch (Exception ex)
+
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                MessageBox.Show($"Error saving data to XML: {ex.Message}", "Error");
+                return (T)serializer.Deserialize(reader);
             }
         }
+
         private void ChangeProfilePicture()
         {
             var openFileDialog = new OpenFileDialog
@@ -332,6 +261,5 @@ namespace socialno_omrezje
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 } 

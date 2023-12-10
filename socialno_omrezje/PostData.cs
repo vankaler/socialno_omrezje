@@ -14,20 +14,62 @@ namespace socialno_omrezje
     [Serializable]
     public class PostData : ViewModelBase, INotifyPropertyChanged, ISerializable
     {
-        private ObservableCollection<PostData> seznamObjav;
 
-        public ObservableCollection<PostData> SeznamObjav
+        //-------------------------------------------------------------------------
+        // OBSERVABLE COLLECTION
+        private ObservableCollection<PostData> postList;
+        public ObservableCollection<PostData> PostList
         {
-            get { return seznamObjav; }
+            get { return postList; }
             set
             {
-                if (seznamObjav != value)
+                if (postList != value)
                 {
-                    seznamObjav = value;
+                    postList = value;
                     OnPropertyChanged();
                 }
             }
         }
+
+        private ObservableCollection<FriendData> friendList;
+        public ObservableCollection<FriendData> FriendList
+        {
+            get { return friendList; }
+            set
+            {
+                if (friendList != value)
+                {
+                    friendList = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        //-------------------------------------------------------------------------
+        // POST DATA
+
+        public PostData()
+        {
+            PostList = new ObservableCollection<PostData>();
+            FriendList = new ObservableCollection<FriendData>();
+        }
+
+        protected PostData(SerializationInfo info, StreamingContext context)
+        {
+            Vsebina = info.GetString("Vsebina");
+            Content = info.GetString("Content");
+            ImagePath = info.GetString("ImagePath");
+            var imageBytes = (byte[])info.GetValue("Slika", typeof(byte[]));
+            Slika = LoadImageFromBytes(imageBytes);
+            FriendList = (ObservableCollection<FriendData>)info.GetValue("Prijatelji", typeof(ObservableCollection<FriendData>));
+            DatumObjave = info.GetDateTime("DatumObjave");
+            Lokacija = info.GetString("Lokacija");
+            Likes = info.GetInt32("Likes");
+            PostList = (ObservableCollection<PostData>)info.GetValue("SeznamObjav", typeof(ObservableCollection<PostData>));
+        }
+
+        //-------------------------------------------------------------------------
+        // POST STRUCTURE
 
         private string vsebina;
         public string Vsebina
@@ -85,20 +127,6 @@ namespace socialno_omrezje
             }
         }
 
-        private ObservableCollection<FriendData> prijatelji;
-        public ObservableCollection<FriendData> Prijatelji
-        {
-            get { return prijatelji; }
-            set
-            {
-                if (prijatelji != value)
-                {
-                    prijatelji = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         private DateTime datumObjave;
         public DateTime DatumObjave
         {
@@ -141,31 +169,6 @@ namespace socialno_omrezje
             }
         }
 
-        // Parameterless constructor for deserialization
-        public PostData()
-        {
-            SeznamObjav = new ObservableCollection<PostData>();
-            Prijatelji = new ObservableCollection<FriendData>();
-        }
-
-        // Serialization constructor
-        protected PostData(SerializationInfo info, StreamingContext context)
-        {
-            // Retrieve values from the SerializationInfo
-            Vsebina = info.GetString("Vsebina");
-            Content = info.GetString("Content");
-            ImagePath = info.GetString("ImagePath");
-            // Deserialize BitmapImage
-            var imageBytes = (byte[])info.GetValue("Slika", typeof(byte[]));
-            Slika = LoadImageFromBytes(imageBytes);
-            Prijatelji = (ObservableCollection<FriendData>)info.GetValue("Prijatelji", typeof(ObservableCollection<FriendData>));
-            DatumObjave = info.GetDateTime("DatumObjave");
-            Lokacija = info.GetString("Lokacija");
-            Likes = info.GetInt32("Likes");
-            SeznamObjav = (ObservableCollection<PostData>)info.GetValue("SeznamObjav", typeof(ObservableCollection<PostData>));
-        }
-
-        // Method to convert BitmapImage to byte array for serialization
         private byte[] SaveImageToBytes(BitmapImage image)
         {
             if (image != null)
@@ -181,7 +184,6 @@ namespace socialno_omrezje
             return null;
         }
 
-        // Method to convert byte array to BitmapImage for deserialization
         private BitmapImage LoadImageFromBytes(byte[] imageData)
         {
             if (imageData != null)
@@ -199,18 +201,17 @@ namespace socialno_omrezje
             return null;
         }
 
-        // Method for custom serialization
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(Vsebina), Vsebina);
             info.AddValue(nameof(Content), Content);
             info.AddValue(nameof(ImagePath), ImagePath);
             info.AddValue(nameof(Slika), SaveImageToBytes(Slika));
-            info.AddValue(nameof(Prijatelji), Prijatelji.ToList());
+            info.AddValue(nameof(FriendList), FriendList.ToList());
             info.AddValue(nameof(DatumObjave), DatumObjave);
             info.AddValue(nameof(Lokacija), Lokacija);
             info.AddValue(nameof(Likes), Likes);
-            info.AddValue(nameof(SeznamObjav), SeznamObjav.ToList());
+            info.AddValue(nameof(PostList), PostList.ToList());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -218,11 +219,6 @@ namespace socialno_omrezje
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        internal void SaveDataToXml(XmlTextWriter xmlWriter)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -52,8 +52,8 @@ namespace socialno_omrezje
             {
                 string filePath = openFileDialog.FileName;
 
-                // Deserialize the data from the XML file into the existing ViewModel instance
-                viewModel = ViewModel.LoadDataFromXml(filePath);
+                // Load data from the XML file into the existing ViewModel instance
+                viewModel = ViewModel.LoadData<ViewModel>(filePath);
 
                 // Update the DataContext with the existing ViewModel
                 DataContext = viewModel;
@@ -70,7 +70,7 @@ namespace socialno_omrezje
                 string filePath = saveFileDialog.FileName;
 
                 // Serialize the current ViewModel instance to an XML file
-                viewModel.SaveDataToXml(filePath);
+                ViewModel.SaveData(viewModel, filePath);
             }
         }
 
