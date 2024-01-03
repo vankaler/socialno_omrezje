@@ -21,11 +21,14 @@ namespace socialno_omrezje
     {
         private AddPostViewModel viewModel;
         private ObservableCollection<PostData> seznamObjav;
+        private ObservableCollection<FriendData> prijateljiList;
 
-        public addPostWindow(ObservableCollection<PostData> wallPosts)
+
+        public addPostWindow(ObservableCollection<PostData> wallPosts, ObservableCollection<FriendData> prijateljiList)
         {
             InitializeComponent();
-            viewModel = new AddPostViewModel(wallPosts);
+            this.prijateljiList = prijateljiList;
+            viewModel = new AddPostViewModel(wallPosts, prijateljiList);
             DataContext = viewModel;
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
         }

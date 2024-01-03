@@ -55,17 +55,25 @@ public class AddPostViewModel : ViewModelBase
 
     public ObservableCollection<PostData> WallPosts { get; set; }
 
+    private ObservableCollection<FriendData> prijateljiList;
+    public ObservableCollection<FriendData> PrijateljiList
+    {
+        get { return prijateljiList; }
+        set { Set(ref prijateljiList, value); }
+    }
+
     public RelayCommand OpenImageDialogCommand { get; set; }
     public RelayCommand AddPostCommand { get; set; }
     public RelayCommand GoBackCommand { get; set; }
 
-    public AddPostViewModel(ObservableCollection<PostData> wallPosts)
+    public AddPostViewModel(ObservableCollection<PostData> wallPosts, ObservableCollection<FriendData> prijateljiList)
     {
         WallPosts = wallPosts;
 
         OpenImageDialogCommand = new RelayCommand(OpenImageDialog);
         AddPostCommand = new RelayCommand(AddPost);
         GoBackCommand = new RelayCommand(GoBack);
+        this.prijateljiList = prijateljiList;
     }
 
     private void OpenImageDialog()

@@ -113,6 +113,8 @@ namespace socialno_omrezje
             OpenAddPostWindowCommand = new RelayCommand(OpenAddPostWindow);
             OpenImageDialogCommand = new RelayCommand(OpenImageDialog);
             UrediCommand = new RelayCommand(UrediObjavo, CanUredi);
+            OdstraniCommand = new RelayCommand(OdstraniObjavo, CanOdstrani);
+
         }
 
 
@@ -130,10 +132,8 @@ namespace socialno_omrezje
         {
             if (MeData != null && MeData.IsEditMode)
             {
-                // Save user data to configuration file
                 var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-                // Add or update settings for the 'Ime' property
                 if (config.AppSettings.Settings["Ime"] == null)
                 {
                     config.AppSettings.Settings.Add("Ime", MeData.Ime);
@@ -142,19 +142,29 @@ namespace socialno_omrezje
                 {
                     config.AppSettings.Settings["Ime"].Value = MeData.Ime;
                 }
-
-                // TODO: Add similar updates for other properties
-
-                // Save changes
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
             }
         }
 
-    
+
+        private void OdstraniObjavo()
+        {
+            if (IzbranaObjava != null)
+            {
+                SeznamObjav.Remove(IzbranaObjava);
+            }
+        }
+
+        private bool CanOdstrani()
+        {
+            return true;
+        }
 
 
-    private void UrediObjavo()
+
+
+        private void UrediObjavo()
         {
             if (IzbranaObjava != null)
             {
@@ -216,7 +226,7 @@ namespace socialno_omrezje
 
         private void OpenAddPostWindow()
         {
-            addPostWindow addPostWindow = new addPostWindow(SeznamObjav);
+            addPostWindow addPostWindow = new addPostWindow(SeznamObjav, prijateljiList);
             addPostWindow.ShowDialog();
         }
 
