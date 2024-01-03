@@ -26,7 +26,9 @@ namespace socialno_omrezje
             // Null check for ViewModel and its properties
             if (ViewModel != null && ViewModel.MeData != null && ViewModel.TempMeData != null)
             {
+                // Update properties of MeData from TempMeData
                 ViewModel.MeData.Update(ViewModel.TempMeData);
+
                 MessageBox.Show("User data updated!");
 
                 // Access TempData here if needed

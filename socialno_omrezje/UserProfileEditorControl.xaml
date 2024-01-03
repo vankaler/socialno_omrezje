@@ -6,11 +6,12 @@
              xmlns:local="clr-namespace:socialno_omrezje" d:DataContext="{d:DesignInstance Type=local:ViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <local:IsNullOrEmptyConverter x:Key="IsNullOrEmptyConverter" />
     </UserControl.Resources>
+
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -51,9 +52,9 @@
                 <Image.Style>
                     <Style TargetType="Image">
                         <Style.Triggers>
-                            <!-- Check if TempMeData.Slika is null or an empty path -->
+                            <!-- Check if MeData.Slika is null or an empty path -->
                             <DataTrigger Binding="{Binding MeData.Slika, Converter={StaticResource IsNullOrEmptyConverter}}" Value="True">
-                                <!-- Set the default image source if TempMeData.Slika is null or an empty path -->
+                                <!-- Set the default image source if MeData.Slika is null or an empty path -->
                                 <Setter Property="Source" Value="\assets\facebook_image.jpg"/>
                             </DataTrigger>
                         </Style.Triggers>

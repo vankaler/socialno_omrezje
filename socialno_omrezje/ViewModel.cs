@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -120,22 +121,40 @@ namespace socialno_omrezje
 
         private void SaveUserData()
         {
-            TempMeData.Update(MeData);
+            MeData.Update(TempMeData);
             SaveUserDataToSettings();
             MessageBox.Show("User data updated!");
         }
 
         private void SaveUserDataToSettings()
         {
-        if (MeData != null)
-        {
-            // TODO
+            if (MeData != null && MeData.IsEditMode)
+            {
+                // Save user data to configuration file
+                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                // Add or update settings for the 'Ime' property
+                if (config.AppSettings.Settings["Ime"] == null)
+                {
+                    config.AppSettings.Settings.Add("Ime", MeData.Ime);
+                }
+                else
+                {
+                    config.AppSettings.Settings["Ime"].Value = MeData.Ime;
+                }
+
+                // TODO: Add similar updates for other properties
+
+                // Save changes
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
         }
 
-        }
+    
 
-        
-        private void UrediObjavo()
+
+    private void UrediObjavo()
         {
             if (IzbranaObjava != null)
             {

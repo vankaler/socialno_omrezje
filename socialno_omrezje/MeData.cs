@@ -18,6 +18,8 @@ namespace socialno_omrezje
         [XmlIgnore] public RelayCommand SaveUserDataCommand { get; set; }
         [XmlIgnore] public RelayCommand ToggleEditModeCommand { get; set; }
 
+        private ViewModel viewModel;
+
         private string ime;
         public string Ime
         {
@@ -151,22 +153,23 @@ namespace socialno_omrezje
 
         private void SaveUserData()
         {
-            Ime = TempMeData.Ime;
-            Naslov = TempMeData.Naslov;
-            Opis = TempMeData.Opis;
-            Slika = TempMeData.Slika;
+            // Assuming you have an instance of ViewModel named viewModel
+            if (viewModel != null)
+            {
+                // Update the properties of MeData from TempMeData
+                viewModel.MeData.Update(viewModel.TempMeData);
 
-            // Save user data to settings
-            SaveUserDataToSettings();
+                // Save user data to settings
+                viewModel.MeData.SaveUserDataToSettings(); // Call the method from MeData
 
-            // Set TempMeData to a new instance to avoid reference issues
-            TempMeData = new MeData(TempMeData); // Assuming you have a copy constructor
+                // Notify that the properties have changed
+                viewModel.RaisePropertyChanged(nameof(viewModel.MeData));
 
-            // Notify that the properties have changed
-            RaisePropertyChanged(nameof(TempMeData));
-
-            MessageBox.Show("User data saved!");
+                MessageBox.Show("User data saved!");
+            }
         }
+
+
 
         private void SaveUserDataToSettings()
         {
@@ -192,6 +195,7 @@ namespace socialno_omrezje
                 ConfigurationManager.RefreshSection("appSettings");
             }
         }
+
 
         public static MeData LoadDataFromXml()
         {
