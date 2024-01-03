@@ -26,7 +26,7 @@
                             <!-- Check if TempMeData.Slika is null or an empty path -->
                             <DataTrigger Binding="{Binding TempMeData.Slika, Converter={StaticResource IsNullOrEmptyConverter}}" Value="True">
                                 <!-- Set the default image source if TempMeData.Slika is null or an empty path -->
-                                <Setter Property="Source" Value="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg"/>
+                                <Setter Property="Source" Value="\assets\facebook_image.jpg"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -54,7 +54,7 @@
                             <!-- Check if TempMeData.Slika is null or an empty path -->
                             <DataTrigger Binding="{Binding MeData.Slika, Converter={StaticResource IsNullOrEmptyConverter}}" Value="True">
                                 <!-- Set the default image source if TempMeData.Slika is null or an empty path -->
-                                <Setter Property="Source" Value="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg"/>
+                                <Setter Property="Source" Value="\assets\facebook_image.jpg"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

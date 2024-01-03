@@ -155,10 +155,12 @@ namespace socialno_omrezje
             PrijateljiList.Add(new FriendData
             {
                 Ime = "New Friend",
-                Slika = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/facebook_image.jpg")),
+                Slika = new BitmapImage(new Uri("/assets/facebook_image.jpg", UriKind.Relative)),
                 Status = GetRandomStatus()
             });
         }
+
+
 
         private void OdstraniPrijatelja()
         {

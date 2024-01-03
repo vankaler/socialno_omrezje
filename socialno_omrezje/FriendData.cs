@@ -90,7 +90,7 @@ namespace socialno_omrezje
         private void DodajPrijatelja()
         {
             // Implement logic to add a friend
-            BitmapImage image = new BitmapImage(new Uri("C:/Users/nejcp/OneDrive/Desktop/II letnik/I_semester/uporabniški_vmesniki/vaje/socialno_omrezje/socialno_omrezje/bin/Images/facebook_image.jpg"));
+            BitmapImage image = new BitmapImage(new Uri("/assets/facebook_image.jpg", UriKind.Relative));
             PrijateljiList.Add(new FriendData
             {
                 Ime = "New Friend",

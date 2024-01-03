@@ -57,8 +57,8 @@
 
 
         <!-- IMAGES -->
-        <Image Grid.Row="0" Source="C:\Users\nejcp\OneDrive\Desktop\Meta-Logo.png" Width="150" Height="50" />
-        <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\bin\Images\facebook_image.jpg" Width="70" Height="70" />
+        <Image Grid.Row="0" Grid.Column="0" Source="\assets\meta_logo.png" Width="150" Height="50" />
+        <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="\assets\facebook_image.jpg" Width="70" Height="70" />
 
         <StackPanel Grid.Row="0" Grid.Column="2" Margin="2" Orientation="Vertical" Grid.RowSpan="2">
             <TextBlock Text="{Binding MeData.Ime}" Margin="5" FontSize="18" FontWeight="Bold" Foreground="DarkBlue" />

@@ -25,7 +25,7 @@
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
 
-        <Image x:Name="imageControl" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="C:\Users\nejcp\OneDrive\Desktop\II letnik\I_semester\uporabniški_vmesniki\vaje\socialno_omrezje\socialno_omrezje\assets\add_image.png" Width="200" Height="200">
+        <Image x:Name="imageControl" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="\assets\add_image.png" Width="200" Height="200">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding OpenImageDialogCommand}" />

@@ -8,7 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\add_image.png" />
+    <None Remove="assets\facebook_image.jpg" />
+    <None Remove="assets\meta_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MvvmLightLibs" Version="5.4.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\add_image.png" />
+    <Resource Include="assets\facebook_image.jpg" />
+    <Resource Include="assets\meta_logo.png" />
   </ItemGroup>
 
 </Project>
