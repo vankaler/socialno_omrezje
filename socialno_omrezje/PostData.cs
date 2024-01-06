@@ -61,7 +61,6 @@ namespace socialno_omrezje
             ImagePath = info.GetString("ImagePath");
             var imageBytes = (byte[])info.GetValue("Slika", typeof(byte[]));
             Slika = LoadImageFromBytes(imageBytes);
-            FriendList = (ObservableCollection<FriendData>)info.GetValue("Prijatelji", typeof(ObservableCollection<FriendData>));
             DatumObjave = info.GetDateTime("DatumObjave");
             Lokacija = info.GetString("Lokacija");
             Likes = info.GetInt32("Likes");

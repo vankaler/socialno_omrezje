@@ -23,13 +23,13 @@ namespace socialno_omrezje
     public class ViewModel : ViewModelBase, ISerializable, INotifyPropertyChanged
     {
 
-        [XmlIgnore] public RelayCommand DodajPrijateljaCommand { get; set; }
-        [XmlIgnore] public RelayCommand OdstraniPrijateljaCommand { get; set; }
-        [XmlIgnore] public RelayCommand UrediPrijateljaCommand { get; set; }
-        [XmlIgnore] public RelayCommand OpenAddPostWindowCommand { get; set; }
-        [XmlIgnore] public RelayCommand OpenImageDialogCommand { get; set; }
-        [XmlIgnore] public RelayCommand OdstraniCommand { get; set; }
-        [XmlIgnore] public RelayCommand UrediCommand { get; set; }
+        public RelayCommand DodajPrijateljaCommand { get; set; }
+        public RelayCommand OdstraniPrijateljaCommand { get; set; }
+         public RelayCommand UrediPrijateljaCommand { get; set; }
+        public RelayCommand OpenAddPostWindowCommand { get; set; }
+        public RelayCommand OpenImageDialogCommand { get; set; }
+        public RelayCommand OdstraniCommand { get; set; }
+        public RelayCommand UrediCommand { get; set; }
         public ICommand ChangeProfilePictureCommand { get; private set; }
         public ICommand SaveUserDataCommand { get; }
 
@@ -161,9 +161,6 @@ namespace socialno_omrezje
             return true;
         }
 
-
-
-
         private void UrediObjavo()
         {
             if (IzbranaObjava != null)
@@ -188,8 +185,6 @@ namespace socialno_omrezje
                 Status = GetRandomStatus()
             });
         }
-
-
 
         private void OdstraniPrijatelja()
         {
@@ -248,12 +243,10 @@ namespace socialno_omrezje
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(SeznamObjav), SeznamObjav);
-            info.AddValue(nameof(PrijateljiList), PrijateljiList);
-            info.AddValue(nameof(MeData), MeData);
         }
         public static void SaveData<T>(T data, string filePath)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            XmlSerializer serializer = new XmlSerializer(typeof(T)); // System.InvalidOperationException: 'There was an error reflecting type 'socialno_omrezje.ViewModel'.' InvalidOperationException: System.Uri cannot be serialized because it does not have a parameterless constructor.
 
             using (StreamWriter writer = new StreamWriter(filePath))
             {

@@ -13,8 +13,7 @@ using System.Xml.Serialization;
 
 namespace socialno_omrezje
 {
-    [Serializable]
-    public class FriendData : ViewModelBase, ISerializable
+    public class FriendData : ViewModelBase
     {
         public RelayCommand DodajPrijateljaCommand { get; set; }
         public RelayCommand OdstraniPrijateljaCommand { get; set; }
@@ -82,89 +81,9 @@ namespace socialno_omrezje
         public FriendData()
         {
             PrijateljiList = new ObservableCollection<FriendData>();
-            DodajPrijateljaCommand = new RelayCommand(DodajPrijatelja);
-            OdstraniPrijateljaCommand = new RelayCommand(OdstraniPrijatelja, CanOdstraniPrijatelja);
-            UrediPrijateljaCommand = new RelayCommand(UrediPrijatelja, CanUrediPrijatelja);
         }
-
-        private void DodajPrijatelja()
-        {
-            // Implement logic to add a friend
-            BitmapImage image = new BitmapImage(new Uri("/assets/facebook_image.jpg", UriKind.Relative));
-            PrijateljiList.Add(new FriendData
-            {
-                Ime = "New Friend",
-                Slika = image,
-                Status = GetRandomStatus()
-            });
-            RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
-            RaisePropertyChanged(nameof(CanUrediPrijatelja));
-
-        }
-
-        private void OdstraniPrijatelja()
-        {
-            // Implement logic to remove a friend
-            if (PrijateljiList.Count > 0)
-            {
-                PrijateljiList.RemoveAt(0);
-                RaisePropertyChanged(nameof(CanOdstraniPrijatelja));
-                RaisePropertyChanged(nameof(CanUrediPrijatelja));
-
-            }
-        }
-
-        public bool CanOdstraniPrijatelja()
-        {
-            return true;
-        }
-
-        private void UrediPrijatelja()
-        {
-            if (PrijateljiList.Count > 0)
-            {
-                PrijateljiList[0].Ime = "Edited Friend";
-                RaisePropertyChanged(nameof(CanUrediPrijatelja));
-
-            }
-        }
-
-        public bool CanUrediPrijatelja()
-        {
-            return true;
-        }
-
-        private string GetRandomStatus()
-        {
-            Random random = new Random();
-            return random.Next(2) == 0 ? "Online" : "Offline";
-        }
-
-        public void SaveDataToXml(System.Xml.XmlTextWriter xmlWriter)
-        {
-            var saveFileDialog = new SaveFileDialog
-            {
-                Filter = "XML Files (*.xml)|*.xml"
-            };
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                string filePath = saveFileDialog.FileName;
-
-                try
-                {
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        var serializer = new XmlSerializer(typeof(ObservableCollection<FriendData>));
-                        serializer.Serialize(fs, PrijateljiList);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error saving data to XML: {ex.Message}", "Error");
-                }
-            }
-        }
+        
+        
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
